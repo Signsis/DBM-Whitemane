@@ -46,6 +46,10 @@ DBM.DefaultOptions.CustomAlertOverrides = {
     ["Frenzy"] = {
         textColor   = { r = 1, g = 0.88, b = 0 },
         timerColor  = { r = 1, g = 1, b = 1 },
+    },
+	["Static Field"] = {
+        textColor   = { r = 1, g = 0.88, b = 0 },
+        timerColor  = { r = 1, g = 1, b = 1 },
     }
 }
 
@@ -501,6 +505,7 @@ local function InitCustomAlertGUI()
         { key = "Spiderlings",  label = "Maexxna - Spiderlings",  icon = "Interface\\Icons\\INV_Misc_MonsterSpiderCarapace_01" },
         { key = "Teleport",     label = "Heigan - Teleport",      icon = "Interface\\Icons\\Spell_Arcane_Blink" },
         { key = "Frenzy",       label = "Faerlina - Frenzy",      icon = "Interface\\Icons\\Spell_Shadow_UnholyFrenzy" },
+		{ key = "Static Field", label = "Malygos - Static Field", icon = "Interface\\Icons\\Spell_Arcane_MassDispel" },
     }
 
     local cardHeight  = 65
