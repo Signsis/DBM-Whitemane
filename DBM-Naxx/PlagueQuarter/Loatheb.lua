@@ -41,8 +41,9 @@ mod.vb.doomCounter  = 0
 mod.vb.sporeTimer   = 15
 mod.vb.sporeCounter = 0
 
-local yellTVolatileSpores = mod:NewYellMe(9250692, "Volatile Spores on me")
 local specWarnVolatileSpores = mod:NewSpecialWarningYou(9250692, nil, nil, nil, 1, 2)
+mod:AddBoolOption("YellVolatileSporesCountdown", true, "announce", nil, nil, nil, 9250692)
+
 
 local function StartSporeTimer(self, time, nextCount)
     local timer = timerSpore:Start(time, nextCount)
@@ -140,14 +141,24 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
     if args.spellId == 9250692 then
-        -- CombinedShow odczekuje 0.5s i ³¹czy wszystkich graczy w jedno ostrze¿enie: "Debuff na: Player1, Player2"
         warnVolatileSpores:CombinedShow(0.3, args.destName)
-		timerwVolatileSpores:Start()
-		if args:IsPlayer() then
-            yellTVolatileSpores:Yell()
+        timerwVolatileSpores:Start()
+        if args:IsPlayer() then
             specWarnVolatileSpores:Show()
-			specWarnVolatileSpores:Play("targetyou")
-		end
+            specWarnVolatileSpores:Play("targetyou")
+
+            -- odliczanie odpali siê tylko jeœli opcja w DBM jest w³¹czona
+            if self.Options.YellVolatileSporesCountdown then
+                SendChatMessage("Volatile Spores on me", "SAY")
+
+                self:Schedule(5, function() SendChatMessage("5", "SAY") end)
+                self:Schedule(6, function() SendChatMessage("4", "SAY") end)
+                self:Schedule(7, function() SendChatMessage("3", "SAY") end)
+                self:Schedule(8, function() SendChatMessage("2", "SAY") end)
+                self:Schedule(9, function() SendChatMessage("1", "SAY") end)
+                self:Schedule(10, function() SendChatMessage("Clear", "SAY") end)
+            end
+        end
     end
 end
 

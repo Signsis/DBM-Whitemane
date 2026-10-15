@@ -159,7 +159,8 @@ L:SetOptionLocalization({
 	Alphabetical		= "Sort in alphabetical order",
 	Duration			= "Sort by duration",
 	CustomSporeCountdown = "Show countdown frame (text + timer) for Itchy Spores",
-	CustomSporeSound	= "Play voice countdown (3..2..1) for Itchy Spores"
+	CustomSporeSound	= "Play voice countdown (3..2..1) for Itchy Spores",
+	YellVolatileSporesCountdown = "Yell and countdown (5..1 Clear) when affected by Volatile Spores"
 })
 
 -----------------
