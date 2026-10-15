@@ -17,7 +17,7 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED_DOSE 70106",
 	"SPELL_AURA_REMOVED 70106",
 	"SPELL_CAST_START 56505",
-	"SPELL_CAST_SUCCESS 57430",
+	"SPELL_CAST_SUCCESS 57430 56105",
 	"CHAT_MSG_RAID_BOSS_EMOTE"
 )
 -- General
@@ -35,10 +35,13 @@ local specWarnChilledtotheBone	= mod:NewSpecialWarningStack(70106, nil, 6, nil, 
 
 local timerSummonPowerSpark		= mod:NewNextTimer(21, 56140, "Summon Power Spark", nil, nil, 1, 59381, DBM_COMMON_L.DAMAGE_ICON, true)
 local timerVortex				= mod:NewCastTimer(13.5, 56105, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON)
-local timerVortexCD				= mod:NewNextTimer(78, 56105, "Vortex", nil, nil, 2)
+local timerVortexCD				= mod:NewNextTimer(78, 56105, "Vortex", nil, nil, 2, nil, nil, true)
 local timerChilledtotheBone		= mod:NewBuffFadesTimer(8, 70106, nil, nil, nil, 5)
 
-local timerArcaneFeedbackCD				= mod:NewNextTimer(62, 9250865, "Arcane Feedback", nil, nil, 2, nil, nil, true)
+local timerArcaneFeedbackCD		= mod:NewNextTimer(60, 9250865, "Arcane Feedback", nil, nil, 2, nil, nil, true)
+local warnArcaneFeedback		= mod:NewTargetAnnounce(9250865, 3)
+local yellArcaneFeedback		= mod:NewYellMe(9250865, "Arcane Feedback on me")
+local specWarnArcaneFeedback	= mod:NewSpecialWarningYou(9250865, nil, nil, nil, 1, 2)
 
 -- Stage Two
 mod:AddTimerLine(DBM_CORE_L.SCENARIO_STAGE:format(2))
@@ -73,9 +76,7 @@ local yell_Vortex = "Watch helplessly as your hopes are swept away..."
 local nextVortex = 0
 local syncSpam = 1
 
-local warnArcaneFeedback = mod:NewTargetAnnounce(9250865, 3)
-local yellArcaneFeedback = mod:NewYellMe(9250865, "Arcane Feedback on me")
-local specWarnArcaneFeedback = mod:NewSpecialWarningYou(9250865, nil, nil, nil, 1, 2)
+
 
 local iconStaticField = "Interface\\Icons\\Spell_Arcane_MassDispel"
 
@@ -102,7 +103,9 @@ function mod:OnCombatStart(delay)
 	timerVortexCD:Start(38-delay)
 	timerSummonPowerSpark:Start(19-delay)
 	table.wipe(guids)
-	timerArcaneFeedbackCD:Start(20)
+	if self:IsDifficulty("heroic10") or self:IsDifficulty("heroic25") then
+		timerArcaneFeedbackCD:Start(20)
+	end
 end
 
 function mod:OnCombatEnd()
@@ -179,6 +182,8 @@ function mod:SPELL_CAST_SUCCESS(args)
 		end
 		
 		timerStaticFieldCD:Start()
+	elseif args:IsSpellID(56105) then
+		timerVortexCD:Start()
 	end
 end
 
