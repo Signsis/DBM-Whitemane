@@ -11,7 +11,7 @@ mod:RegisterCombat("yell", L.YellSarthPull)
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 56908 58956",
 	"SPELL_CAST_SUCCESS 57579 59127",
-	"SPELL_AURA_APPLIED 57491",
+	"SPELL_AURA_APPLIED 57491 9250867 9250868",
 	"SPELL_DAMAGE 59128",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"CHAT_MSG_MONSTER_EMOTE",
@@ -26,6 +26,7 @@ local warnVesperon				= mod:NewAnnounce("WarningVesperon", 2, 61251)
 local warnTenebronWhelpsSoon	= mod:NewAnnounce("WarningWhelpsSoon", 1, 1022, false)
 local warnShadronPortalSoon		= mod:NewAnnounce("WarningPortalSoon", 1, 11420, false)
 local warnVesperonPortalSoon	= mod:NewAnnounce("WarningReflectSoon", 1, 57988, false)
+local warnTwilightBlackout            = mod:NewTargetNoFilterAnnounce(9250867, 2)
 
 local specWarnFireWall			= mod:NewSpecialWarning("WarningFireWall", nil, nil, nil, 2, 2)
 local specWarnVesperonPortal	= mod:NewSpecialWarning("WarningVesperonPortal", false, nil, nil, 1, 7)
@@ -44,6 +45,7 @@ local timerVesperon				= mod:NewTimer(138, "TimerVesperon", 61251, nil, nil, 1)
 local timerTenebronWhelps		= mod:NewTimer(80, "TimerTenebronWhelps", 1022)
 local timerShadronPortal		= mod:NewTimer(132, "TimerShadronPortal", 11420)
 local timerVesperonPortal		= mod:NewTimer(168, "TimerVesperonPortal", 57988)
+local timerTwilightBlackout        = mod:NewCDTimer(50, 9250867, nil, nil, nil, 3, nil, nil, true)
 
 mod:AddBoolOption("AnnounceFails", true, "announce")
 
@@ -54,6 +56,9 @@ local vesperonPortalEmote = "You pose no threat, lesser beings! Give me your wor
 local lastvoids = {}
 local lastfire = {}
 local tsort, tinsert, twipe = table.sort, table.insert, table.wipe
+
+local yellTwilightBlackout = mod:NewYellMe(9250867, "Twilight Blackout on me")
+local specWarnTwilightBlackout = mod:NewSpecialWarningYou(9250867, nil, nil, nil, 1, 2)
 
 local function isunitdebuffed(spellName)
 	for uId in DBM:GetGroupMembers() do
@@ -113,6 +118,7 @@ function mod:OnCombatStart(delay)
 	timerWall:Start(20-delay)
 	warnBreathSoon:Schedule(10-delay)
 	timerBreath:Start(15-delay)
+	timerTwilightBlackout:Start(22)
 
 	twipe(lastvoids)
 	twipe(lastfire)
@@ -172,6 +178,13 @@ function mod:SPELL_AURA_APPLIED(args)
 	if self.Options.AnnounceFails and self.Options.Announce and args.spellId == 57491 and DBM:GetRaidRank() >= 1 and DBM:GetRaidUnitId(args.destName) ~= "none" and args.destName then
 		lastfire[args.destName] = (lastfire[args.destName] or 0) + 1
 		SendChatMessage(L.FireWallOn:format(args.destName), "RAID")
+	elseif args:IsSpellID(9250867, 9250868) then     --  To ten nowy debuff          args:IsSpellID(60936, 57407)     9250867
+		warnTwilightBlackout:Show(args.destName)
+		timerTwilightBlackout:Start()
+		if args:IsPlayer() then
+            yellTwilightBlackout:Yell()
+            specWarnTwilightBlackout:Show()
+		end
 	end
 end
 
