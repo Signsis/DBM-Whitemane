@@ -13,7 +13,7 @@ mod:RegisterEvents(
 )
 
 mod:RegisterEventsInCombat(
-	"SPELL_AURA_APPLIED 60936 57407 70106",
+	"SPELL_AURA_APPLIED 60936 57407 70106 9250865",
 	"SPELL_AURA_APPLIED_DOSE 70106",
 	"SPELL_AURA_REMOVED 70106",
 	"SPELL_CAST_START 56505",
@@ -33,10 +33,12 @@ local warnChilledtotheBone		= mod:NewCountAnnounce(70106, 2, nil, false)
 
 local specWarnChilledtotheBone	= mod:NewSpecialWarningStack(70106, nil, 6, nil, nil, 1, 2)
 
-local timerSummonPowerSpark		= mod:NewNextTimer(21, 56140, "Summon Power Spark", nil, nil, 1, 59381, DBM_COMMON_L.DAMAGE_ICON)
+local timerSummonPowerSpark		= mod:NewNextTimer(21, 56140, "Summon Power Spark", nil, nil, 1, 59381, DBM_COMMON_L.DAMAGE_ICON, true)
 local timerVortex				= mod:NewCastTimer(13.5, 56105, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON)
 local timerVortexCD				= mod:NewNextTimer(78, 56105, "Vortex", nil, nil, 2)
 local timerChilledtotheBone		= mod:NewBuffFadesTimer(8, 70106, nil, nil, nil, 5)
+
+local timerArcaneFeedbackCD				= mod:NewNextTimer(62, 9250865, "Arcane Feedback", nil, nil, 2, nil, nil, true)
 
 -- Stage Two
 mod:AddTimerLine(DBM_CORE_L.SCENARIO_STAGE:format(2))
@@ -71,7 +73,15 @@ local yell_Vortex = "Watch helplessly as your hopes are swept away..."
 local nextVortex = 0
 local syncSpam = 1
 
--- local warnArcaneFeedback = mod:NewTargetAnnounce(9250865, 3)   -- to ten nowy debuff
+local warnArcaneFeedback = mod:NewTargetAnnounce(9250865, 3)
+local yellArcaneFeedback = mod:NewYellMe(9250865, "Arcane Feedback on me")
+local specWarnArcaneFeedback = mod:NewSpecialWarningYou(9250865, nil, nil, nil, 1, 2)
+
+local iconStaticField = "Interface\\Icons\\Spell_Arcane_MassDispel"
+
+-- Dodanie opcji w menu DBM dla Malygosa:
+mod:AddBoolOption("CustomStaticFieldAlert", true, "announce", nil, nil, nil, 57430)
+mod:AddBoolOption("CustomStaticFieldSound", true, "announce", nil, nil, nil, 57430)
 
 local function buildGuidTable()
 	table.wipe(guids)
@@ -92,6 +102,11 @@ function mod:OnCombatStart(delay)
 	timerVortexCD:Start(38-delay)
 	timerSummonPowerSpark:Start(19-delay)
 	table.wipe(guids)
+	timerArcaneFeedbackCD:Start(20)
+end
+
+function mod:OnCombatEnd()
+    DBM:HideCustomAlert()
 end
 
 function mod:SPELL_AURA_APPLIED(args)
@@ -116,6 +131,8 @@ function mod:SPELL_AURA_APPLIED(args)
 				specWarnSurge:Play("defensive")
 			end
 		end
+	elseif args:IsSpellID(9250865) then
+		timerArcaneFeedbackCD:Start()
 	end
 end
 
@@ -144,6 +161,10 @@ function mod:SPELL_CAST_SUCCESS(args)
 		if not tableBuild then
 			buildGuidTable()
 		end
+
+		if self.Options.CustomStaticFieldAlert then
+            DBM:ShowCustomAlert(iconStaticField, "Static Field", 14, true, self.Options.CustomStaticFieldSound)
+        end
 		
 		local announcetarget = guids[args.destGUID]
 		if announcetarget == UnitName("player") then
@@ -182,18 +203,24 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg,sourceName)
 	elseif msg == L.EmoteSurge or msg:find(L.EmoteSurge) or msg == L.EmoteSurge:gsub("%%s", sourceName) then -- emote isn't working quite right on Whitemane PTR, using another method
 		self:SendSync("MalygosSurge", UnitName("player"), syncSpam)
 		syncSpam = syncSpam % 2 + 1 -- dummy alternating arg to bypass DBM's 8-second sync antispam (hardcoded in :SendSync()). needed as Surge happens more often than that on Whitemane PTR
-	--elseif msg:find("targets (.-) with Arcane Feedback") then
-     --   local targetName = msg:match("targets (.-) with Arcane Feedback")
-        
-    --   if targetName then
-            -- Wyœwietla ostrze¿enie DBM z nickiem gracza (np. "Arcane Feedback on Signsis")
-    --      warnArcaneFeedback:Show(targetName)
-            
-            -- Jeœli to TY jesteœ celem, mo¿esz dodatkowo rzuciæ Yell/Krzyk na czacie:
-    --      if targetName == UnitName("player") then
-                -- Opcjonalny w³asny komunikat dla gracza
-    --     end
-      --end
+	elseif msg:find("Arcane Feedback") then
+        -- Wyci¹gamy nazwisko gracza przed fraz¹ "with Arcane Feedback"
+        local targetName = msg:match("targets%s+(.-)%s+with Arcane Feedback")
+
+        if targetName then
+            -- Poprawka 3.3.5a: bezpieczne usuniêcie spacji/interpunkcji bez uciekania siê do nieistniej¹cego targetName:strtrim()
+            targetName = targetName:gsub("^%s*", ""):gsub("%s*$", ""):gsub("[%.!%?]+$", "")
+
+            -- Ostrze¿enie w DBM
+            warnArcaneFeedback:Show(targetName)
+
+            -- Jeœli to TY jesteœ celem:
+            if targetName == UnitName("player") then
+                yellArcaneFeedback:Yell()
+				specWarnArcaneFeedback:Show()
+				specWarnArcaneFeedback:Play("targetyou")
+            end
+        end
 	end
 end
 
@@ -218,6 +245,7 @@ function mod:OnSync(event, arg)
 		timerSummonPowerSpark:Cancel()
 		timerVortexCD:Cancel()
 		warnVortexSoon:Cancel()
+		timerArcaneFeedbackCD:Cancel()
 		warnPhase2:Show()
 		timerIntermission:Start()
 		timerBreathCD:Start(78)
@@ -229,6 +257,9 @@ function mod:OnSync(event, arg)
 		self:Schedule(6, buildGuidTable)
 		timerBreathCD:Cancel()
 		timerStaticFieldCD:Start(13)
+		if self.Options.CustomStaticFieldAlert then
+            DBM:ShowCustomAlert(iconStaticField, "Static Field", 13, true, self.Options.CustomStaticFieldSound)
+        end
 	elseif event == "MalygosSurge" then
 		warnSurge:CombinedShow(0.2, arg)
 		if arg == UnitName("player") then
@@ -241,12 +272,14 @@ end
 if RaidBossEmoteFrame then
     local originalOnEvent = RaidBossEmoteFrame:GetScript("OnEvent")
     RaidBossEmoteFrame:SetScript("OnEvent", function(self, event, msg, ...)
-        if msg and msg == "A Power Spark forms from a nearby rift!" then
-            return 
-        end
-        
+        -- wywo³ujemy oryginalny event ¿eby DBM i inne dodatki go odebra³y
         if originalOnEvent then
             originalOnEvent(self, event, msg, ...)
+        end
+        
+        -- jeœli to emotka sparka i jesteœmy w walce natychmiast ukrywamy napis z ekranu
+        if mod:IsInCombat() and msg and (msg == "A Power Spark forms from a nearby rift!" or msg:find("Power Spark")) then
+            RaidBossEmoteFrame:Hide()
         end
     end)
 end
