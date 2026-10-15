@@ -7,21 +7,23 @@ mod:SetCreatureID(15956)
 mod:RegisterCombat("combat_yell", L.Pull1, L.Pull2)
 
 mod:RegisterEventsInCombat(
-    "SPELL_CAST_START 28783 56090 28785 54021 9250578 9250582 9250583 9250579",
-    "SPELL_CAST_SUCCESS 56090 9250579",
+    "SPELL_CAST_START 28785 54021 9250582 9250583",
+	"SPELL_CAST_SUCCESS 28783 56090 9250578 9250579",
     "SPELL_AURA_REMOVED 28785 54021 9250582 9250583",
-    "SPELL_AURA_APPLIED 9250685 9250684"
+    "SPELL_AURA_APPLIED 9250685 9250684",
+	"COMBAT_LOG_EVENT_UNFILTERED"
 )
 
 local warningLocustSoon    = mod:NewSoonAnnounce(28785, 2)
 local warningLocustFaded   = mod:NewFadesAnnounce(28785, 1)
 
--- Customowy Warning dla Impale, obs³u¿y formatowanie kolorami
-local warnImpaleClassColor = mod:NewAnnounce("warnImpaleClassColor", 3, 28783)
-warnImpaleClassColor.text  = "|cffffe000Impale on|r %s"
+-- Customowy Warning dla Impale
+--local warnImpaleClassColor = mod:NewAnnounce("warnImpaleClassColor", 3, 28783)
+--warnImpaleClassColor.text  = "|cffffe000Impale on|r %s"
+local warnImpale    = mod:NewSpellAnnounce(9250578, 3)
 
 local specialWarningLocust = mod:NewSpecialWarningSpell(28785, nil, nil, nil, 2, 2)
-local yellImpale           = mod:NewYell(28783, nil, false)
+--local yellImpale           = mod:NewYell(28783, nil, false)
 
 local timerLocustIn        = mod:NewCDTimer(60, 28785, "Locust Swarm", nil, nil, 2)
 local timerLocustFade      = mod:NewBuffActiveTimer(16, 28785, nil, nil, nil, 2)
@@ -33,16 +35,13 @@ mod:AddBoolOption("CustomLocustAlert", true, "general", nil, nil, nil, 28785)
 mod:AddBoolOption("LocustSound", true, "sound", nil, nil, nil, 28785)
 mod:AddBoolOption("ArachnophobiaTimer", true, "timer", nil, nil, nil, "at1859")
 
--- Zmienna pomocnicza do zapobiegania spamowi dla Impale
-local impaleTargets = {}
 
 function mod:OnCombatStart(delay)
-    table.wipe(impaleTargets)
     local initialCD = 60 - delay
     timerLocustIn:Start(60 - delay)
     local bar = timerLocustIn:Start(60)
     if bar then
-        bar:SetColor({r = 0, g = 1, b = 0}) -- Zielony (RGB)
+        bar:SetColor({r = 0, g = 1, b = 0})
     end
     warningLocustSoon:Schedule(50 - delay)
     timerImpale:Start(11 - delay)
@@ -60,52 +59,7 @@ function mod:OnCombatEnd(wipe)
 end
 
 function mod:SPELL_CAST_START(args)
-    if args:IsSpellID(28783, 56090, 9250578, 9250579) then  -- Impale
-        timerImpale:Start()
-        
-        -- Algorytm pobierania celu i przypisania koloru klasy z WA
-        local target = args.destName
-        if not target or target == "" then
-            target = UnitName("boss1target") or UnitName("targettarget") or "Unknown"
-        end
-        
-        if self:AntiSpam(3, target) then -- unikanie spamu jeœli zdarzenie zdubluje target
-            local classColorHex = "ffffffff" -- Domyœlnie bia³y
-            
-            if target and target ~= "Unknown" then
-                local numRaid = GetNumRaidMembers()
-                if numRaid > 0 then
-                    for i = 1, numRaid do
-                        local unit = "raid" .. i
-                        if UnitName(unit) == target then
-                            local _, classFileName = UnitClass(unit)
-                            if classFileName and RAID_CLASS_COLORS[classFileName] then
-                                classColorHex = RAID_CLASS_COLORS[classFileName].colorStr
-                            end
-                            break
-                        end
-                    end
-                else
-                    if target == UnitName("player") then
-                        local _, classFileName = UnitClass("player")
-                        if classFileName and RAID_CLASS_COLORS[classFileName] then
-                            classColorHex = RAID_CLASS_COLORS[classFileName].colorStr
-                        end
-                    end
-                end
-            end
-            
-            -- Wyœwietlenie ostrze¿enia na ekranie DBM
-            local formattedTarget = "|c" .. classColorHex .. target .. "|r"
-            warnImpaleClassColor:Show(formattedTarget)
-
-            -- Yell jeœli my jesteœmy celem
-            if target == UnitName("player") then
-                yellImpale:Yell()
-            end
-        end
-
-    elseif args:IsSpellID(28785, 54021, 9250582, 9250583) then  -- Locust Swarm
+	if args:IsSpellID(28785, 54021, 9250582, 9250583) then  -- Locust Swarm
         specialWarningLocust:Show()
         specialWarningLocust:Play("aesoon")
         timerLocustIn:Stop()
@@ -125,10 +79,15 @@ function mod:SPELL_CAST_START(args)
                 bar:SetColor({r = 0, g = 1, b = 0})
             end
         end
-    end
+	end
 end
 
-mod.SPELL_CAST_SUCCESS = mod.SPELL_CAST_START
+function mod:SPELL_CAST_SUCCESS(args)
+	if args:IsSpellID(28783, 56090, 9250578, 9250579) then
+		timerImpale:Start()
+		warnImpale:Show()
+	end
+end
 
 function mod:SPELL_AURA_APPLIED(args)
     if args:IsSpellID(9250685, 9250684) and args:IsPlayer() then
@@ -164,6 +123,15 @@ function mod:SPELL_AURA_REMOVED(args)
 
         if self.Options.CustomLocustAlert then
             DBM:ShowCustomAlert("Interface\\Icons\\Spell_Nature_InsectSwarm", "Locust Swarm", nextCD, nil, self.Options.LocustSound)
+        end
+    end
+end
+
+function mod:COMBAT_LOG_EVENT_UNFILTERED(timestamp, event, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellId, spellName)
+    if (event == "SPELL_PERIODIC_DAMAGE" or event == "SPELL_PERIODIC_MISSED" or event == "SPELL_DAMAGE") and (spellId == 9250685 or spellId == 9250684) then
+        if destGUID == UnitGUID("player") then
+				specWarnGTFO:Show(spellName)
+				specWarnGTFO:Play("watchfeet")
         end
     end
 end

@@ -41,6 +41,9 @@ mod.vb.doomCounter  = 0
 mod.vb.sporeTimer   = 15
 mod.vb.sporeCounter = 0
 
+local yellTVolatileSpores = mod:NewYellMe(9250692, "Volatile Spores on me")
+local specWarnVolatileSpores = mod:NewSpecialWarningYou(9250692, nil, nil, nil, 1, 2)
+
 local function StartSporeTimer(self, time, nextCount)
     local timer = timerSpore:Start(time, nextCount)
     if timer then
@@ -140,6 +143,11 @@ function mod:SPELL_AURA_APPLIED(args)
         -- CombinedShow odczekuje 0.5s i ³¹czy wszystkich graczy w jedno ostrze¿enie: "Debuff na: Player1, Player2"
         warnVolatileSpores:CombinedShow(0.3, args.destName)
 		timerwVolatileSpores:Start()
+		if args:IsPlayer() then
+            yellTVolatileSpores:Yell()
+            specWarnVolatileSpores:Show()
+			specWarnVolatileSpores:Play("targetyou")
+		end
     end
 end
 

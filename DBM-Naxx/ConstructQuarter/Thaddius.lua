@@ -33,6 +33,7 @@ local timerNextShift		= mod:NewNextTimer(20, 28089, "Polarity Shift", nil, nil, 
 local timerShiftCast		= mod:NewCastTimer(3, 28089, nil, nil, nil, 2)
 local timerThrow			= mod:NewNextTimer(28, 28338, "Magnetic Pull", nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 local timerChainLightning		= mod:NewNextTimer(15, 9250651, "Chain Lightning", nil, nil, 3, nil, nil, true)
+local warnChainLightning    = mod:NewSpellAnnounce(9250651, 3)
 
 if not DBM.Options.GroupOptionsBySpell then
 	mod:AddMiscLine(DBM_CORE_L.OPTION_CATEGORY_DROPDOWNS)
@@ -244,5 +245,6 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
     if args:IsSpellID(9250651, 54531, 28167, 9250650) then
 		timerChainLightning:Start()
+		warnChainLightning:Show()
 	end
 end
