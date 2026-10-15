@@ -8,7 +8,7 @@ L.MainFrame 						= CL.DEADLY_BOSS_MODS -- NO TRANSLATE
 L.DBMWarmane						= CL.DBM .. "-Frostmourne by Zin (broizter)"
 L.TranslationByPrefix				= "Retail backport by "
 L.TranslationBy						= "Barsoom, Bunny67, Zidras"
-L.Website							= "DBM Whitemane (Naxxramas - 08.10.2026) | Signsis"
+L.Website							= "DBM Whitemane | Signsis"
 L.WebsiteButton						= "Website"
 
 L.OTabBosses						= "Boss Options"--Deprecated and will be deleted once tabs no longer use this

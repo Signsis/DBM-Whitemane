@@ -9,6 +9,12 @@ L:SetGeneralLocalization({
 	name = "Malygos"
 })
 
+L:SetOptionLocalization({
+	CustomStaticFieldAlert	= "Show countdown frame (text + timer) for Static Field",
+	CustomStaticFieldSound	= "Play voice countdown (3..2..1) for Static Field"
+})
+
+
 L:SetMiscLocalization({
 	YellPull	= "My patience has reached its limit. I will be rid of you!",
 	EmoteSpark	= "A Power Spark forms from a nearby rift!",

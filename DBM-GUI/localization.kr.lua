@@ -5,7 +5,7 @@ local L = DBM_GUI_L
 
 L.TranslationByPrefix		= "백포트 "
 L.TranslationBy			= "Barsoom, Bunny67, Zidras"
-L.Website					= "DBM Whitemane (Naxxramas - 08.10.2026) | Signsis"
+L.Website					= "DBM Whitemane | Signsis"
 L.WebsiteButton				= "웹사이트"
 
 L.OTabBosses	= "보스"--Deprecated and will be deleted once tabs no longer use this

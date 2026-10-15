@@ -85,7 +85,7 @@ L.Lowest							= "Наименьший таймер наверху"
 
 L.TranslationByPrefix		= "Retail backport by "
 L.TranslationBy				= "Barsoom, Bunny67, Zidras"
-L.Website					= "DBM Whitemane (Naxxramas - 08.10.2026) | Signsis"
+L.Website					= "DBM Whitemane | Signsis"
 L.WebsiteButton				= "Форумы"
 
 L.OTabBosses				= "Боссы"

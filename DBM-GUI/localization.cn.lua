@@ -12,7 +12,7 @@ local L = DBM_GUI_L
 
 L.TranslationByPrefix		= "向后移植 "
 L.TranslationBy			= "Barsoom, Bunny67, Zidras"
-L.Website					= "DBM Whitemane (Naxxramas - 08.10.2026) | Signsis"
+L.Website					= "DBM Whitemane | Signsis"
 L.WebsiteButton				= "网页"
 
 L.OTabBosses	= "模块"

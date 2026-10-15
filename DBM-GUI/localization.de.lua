@@ -7,7 +7,7 @@ local L = DBM_GUI_L
 
 L.TranslationByPrefix		= "Retail backport von "
 L.TranslationBy			= "Barsoom, Bunny67, Zidras"
-L.Website					= "DBM Whitemane (Naxxramas - 08.10.2026) | Signsis"
+L.Website					= "DBM Whitemane | Signsis"
 L.WebsiteButton				= "Webseite"
 
 L.OTabBosses	= "Bosse"
