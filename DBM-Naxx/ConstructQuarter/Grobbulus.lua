@@ -39,7 +39,6 @@ local specWarnCloud            = mod:NewSpecialWarningKeepMove(28240, "Tank", ni
 local specWarnCloudGTFO        = mod:NewSpecialWarningGTFO(28240, "-Tank", nil, nil, 1, 2) 
 specWarnCloudGTFO.text = "|cff00ff00Cloud damage - move away|r"
 local specWarnManySlimes    = mod:NewSpecialWarning("SpecWarnManySlimes", nil, nil, nil, 1, 2)
-local yellInjection            = mod:NewYellMe(28169, nil, false)
 
 local timerInjection        = mod:NewTargetTimer(10, 28169, nil, nil, nil, 3)
 local timerCloud            = mod:NewNextTimer(15, 28240, "Poison Cloud", nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
@@ -54,7 +53,7 @@ mod:AddSetIconOption("SetIconOnInjectionTarget", 28169, false, false, {1, 2, 3, 
 local mutateIcons = {}
 local slimesAlive = 0
 
-
+mod:AddBoolOption("YellMutatingInjectionCountdown", true, "announce", nil, nil, nil, 28169)
 
 -- Bezpieczna funkcja pobieraj¹ca nick w kolorze klasy gracza
 local function GetClassColoredName(name)
@@ -145,6 +144,10 @@ function mod:OnCombatEnd()
     end
 end
 
+function mod:YellMutating(text)
+    SendChatMessage(text, "SAY")
+end
+
 function mod:SPELL_AURA_APPLIED(args)
     if args.spellId == 28169 then
         warnInjection:Show(args.destName)
@@ -152,7 +155,22 @@ function mod:SPELL_AURA_APPLIED(args)
         if args:IsPlayer() then
             specWarnInjection:Show()
             specWarnInjection:Play("runout")
-            yellInjection:Yell()
+
+            -- odliczanie odpali siê tylko jeœli opcja w DBM jest w³¹czona
+            if self.Options.YellMutatingInjectionCountdown then
+                self:UnscheduleMethod("YellMutating")
+
+                SendChatMessage("Mutating Injection on me", "SAY")
+
+				self:ScheduleMethod(3, "YellMutating", "7")
+                self:ScheduleMethod(4, "YellMutating", "6")
+                self:ScheduleMethod(5, "YellMutating", "5")
+                self:ScheduleMethod(6, "YellMutating", "4")
+                self:ScheduleMethod(7, "YellMutating", "3")
+                self:ScheduleMethod(8, "YellMutating", "2")
+                self:ScheduleMethod(9, "YellMutating", "1")
+                self:ScheduleMethod(10, "YellMutating", "Clear")
+            end
         end
         if self.Options.SetIconOnInjectionTarget then
             table.insert(mutateIcons, args.destName)
@@ -166,6 +184,11 @@ function mod:SPELL_AURA_REMOVED(args)
         timerInjection:Cancel(args.destName)
         if self.Options.SetIconOnInjectionTarget then
             removeIcon(self, args.destName)
+        end
+        
+        if args:IsPlayer() and self.Options.YellMutatingInjectionCountdown then
+            self:UnscheduleMethod("YellMutating")
+            SendChatMessage("Clear", "SAY")
         end
     end
 end

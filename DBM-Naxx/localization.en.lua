@@ -191,6 +191,10 @@ L:SetGeneralLocalization({
 	name = "Grobbulus"
 })
 
+L:SetOptionLocalization({
+	YellMutatingInjectionCountdown = "Yell and countdown (7..1 Clear) when affected by Mutating Injection"
+})
+
 -------------
 --  Gluth  --
 -------------
