@@ -12,10 +12,12 @@ mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 56908 58956",
 	"SPELL_CAST_SUCCESS 57579 59127",
 	"SPELL_AURA_APPLIED 57491 9250867 9250868",
+	"SPELL_AURA_REMOVED 9250867 9250868",
 	"SPELL_DAMAGE 59128",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"CHAT_MSG_MONSTER_EMOTE",
 	"UNIT_DIED"
+    
 )
 
 local warnFissure				= mod:NewTargetNoFilterAnnounce(59127, 4)
@@ -27,6 +29,7 @@ local warnTenebronWhelpsSoon	= mod:NewAnnounce("WarningWhelpsSoon", 1, 1022, fal
 local warnShadronPortalSoon		= mod:NewAnnounce("WarningPortalSoon", 1, 11420, false)
 local warnVesperonPortalSoon	= mod:NewAnnounce("WarningReflectSoon", 1, 57988, false)
 local warnTwilightBlackout            = mod:NewTargetNoFilterAnnounce(9250867, 2)
+mod:AddBoolOption("YellTwilightBlackoutCountdown", true, "announce", nil, nil, nil, 9250867)
 
 local specWarnFireWall			= mod:NewSpecialWarning("WarningFireWall", nil, nil, nil, 2, 2)
 local specWarnVesperonPortal	= mod:NewSpecialWarning("WarningVesperonPortal", false, nil, nil, 1, 7)
@@ -57,7 +60,6 @@ local lastvoids = {}
 local lastfire = {}
 local tsort, tinsert, twipe = table.sort, table.insert, table.wipe
 
-local yellTwilightBlackout = mod:NewYellMe(9250867, "Twilight Blackout on me")
 local specWarnTwilightBlackout = mod:NewSpecialWarningYou(9250867, nil, nil, nil, 1, 2)
 
 local function isunitdebuffed(spellName)
@@ -174,6 +176,14 @@ function mod:SPELL_CAST_SUCCESS(args)
 	end
 end
 
+local function TwilightBlackoutYell(self, text, isClear)
+    if isClear then
+        SendChatMessage("Clear", "SAY")
+    else
+        SendChatMessage(text, "SAY")
+    end
+end
+
 function mod:SPELL_AURA_APPLIED(args)
 	if self.Options.AnnounceFails and self.Options.Announce and args.spellId == 57491 and DBM:GetRaidRank() >= 1 and DBM:GetRaidUnitId(args.destName) ~= "none" and args.destName then
 		lastfire[args.destName] = (lastfire[args.destName] or 0) + 1
@@ -182,10 +192,41 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnTwilightBlackout:Show(args.destName)
 		timerTwilightBlackout:Start()
 		if args:IsPlayer() then
-            yellTwilightBlackout:Yell()
             specWarnTwilightBlackout:Show()
-		end
+
+            -- odliczanie odpali siê tylko jeœli opcja w DBM jest w³¹czona
+            if self.Options.YellTwilightBlackoutCountdown then
+                
+                self:Unschedule(TwilightBlackoutYell)
+
+                SendChatMessage("Twilight Blackout on me", "SAY")
+
+				self:Schedule(3, TwilightBlackoutYell, self, "12")
+                self:Schedule(4, TwilightBlackoutYell, self, "11")
+                self:Schedule(5, TwilightBlackoutYell, self, "10")
+                self:Schedule(6, TwilightBlackoutYell, self, "9")
+                self:Schedule(7, TwilightBlackoutYell, self, "8")
+                self:Schedule(8, TwilightBlackoutYell, self, "7")
+                self:Schedule(9, TwilightBlackoutYell, self, "6")
+                self:Schedule(10, TwilightBlackoutYell, self, "5")
+                self:Schedule(11, TwilightBlackoutYell, self, "4")
+                self:Schedule(12, TwilightBlackoutYell, self, "3")
+                self:Schedule(13, TwilightBlackoutYell, self, "2")
+                self:Schedule(14, TwilightBlackoutYell, self, "1")
+                self:Schedule(15, TwilightBlackoutYell, self, "Clear", true)
+            end
+        end
 	end
+end
+
+
+function mod:SPELL_AURA_REMOVED(args)
+    if args:IsSpellID(9250867, 9250868) and args:IsPlayer() then
+        if self.Options.YellTwilightBlackoutCountdown then
+            self:Unschedule(TwilightBlackoutYell)
+            SendChatMessage("Clear", "SAY")
+        end
+    end
 end
 
 function mod:SPELL_DAMAGE(_, _, _, _, destName, _, spellId)

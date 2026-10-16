@@ -91,7 +91,8 @@ L:SetOptionLocalization({
 	WarningReflectSoon		= "Announce Vesperon Reflect soon",
 	WarningTenebronPortal	= "Show special warning for Tenebron's portal",
 	WarningShadronPortal	= "Show special warning for Shadron's portal",
-	WarningVesperonPortal	= "Show special warning for Vesperon's portal"
+	WarningVesperonPortal	= "Show special warning for Vesperon's portal",
+	YellTwilightBlackoutCountdown = "Yell and countdown (12..1 Clear) when affected by Twilight Blackout"
 })
 
 L:SetMiscLocalization({
