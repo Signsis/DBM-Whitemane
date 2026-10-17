@@ -22,7 +22,8 @@ local specWarnWebWrap    = mod:NewSpecialWarningSwitch(28622, "RangedDps", nil, 
 local yellWebWrap        = mod:NewYellMe(28622)
 
 local timerWebSpray        = mod:NewNextTimer(40.2, 29484, nil, nil, nil, 2)
-local timerWebWrap        = mod:NewNextTimer(30, 28622, nil, "RangedDps|Healer", nil, 3)
+--local timerWebWrap        = mod:NewNextTimer(30, 28622, nil, "RangedDps|Healer", nil, 3)
+local timerWebWrap		  = mod:NewNextTimer(30, 28622)
 local timerSpider        = mod:NewTimer(40.2, "TimerSpider", 17332, nil, nil, 1)
 
 mod:AddBoolOption("CustomWebSprayAlert", true, "general", nil, nil, nil, 29484)
@@ -64,7 +65,8 @@ function mod:SPELL_AURA_APPLIED(args)
             timerWebWrap:Start(40)
         end
         if args.destName == UnitName("player") then
-            yellWebWrap:Yell()
+            --yellWebWrap:Yell()
+			SendChatMessage("Web Wrap on " .. args.destName, "SAY")
         elseif not DBM:UnitDebuff("player", args.spellName) and self:AntiSpam(5, 2) then
             specWarnWebWrap:Play("targetchange")
         end
