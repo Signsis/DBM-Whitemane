@@ -160,7 +160,7 @@ function mod:SPELL_AURA_APPLIED(args)
             if self.Options.YellMutatingInjectionCountdown then
                 self:UnscheduleMethod("YellMutating")
 
-                SendChatMessage("Mutating Injection on me", "SAY")
+				SendChatMessage("Mutating Injection on " .. args.destName, "SAY")
 
 				self:ScheduleMethod(3, "YellMutating", "7")
                 self:ScheduleMethod(4, "YellMutating", "6")
