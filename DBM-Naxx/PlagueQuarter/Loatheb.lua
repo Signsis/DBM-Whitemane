@@ -10,6 +10,7 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
     "SPELL_CAST_SUCCESS 29204 55052 55593",
     "SPELL_AURA_APPLIED 9250692",
+	"SPELL_AURA_REMOVED 9250692",
     "SPELL_DAMAGE",
     "SPELL_SUMMON 29234",
     "SWING_DAMAGE",
@@ -149,16 +150,25 @@ function mod:SPELL_AURA_APPLIED(args)
 
             -- odliczanie odpali siê tylko jeœli opcja w DBM jest w³¹czona
             if self.Options.YellVolatileSporesCountdown then
-                SendChatMessage("Volatile Spores on me", "SAY")
+                --SendChatMessage("Volatile Spores on me", "SAY")
+				SendChatMessage("Volatile Spores on " .. args.destName, "SAY")
 
+				self:Schedule(3, function() SendChatMessage("7", "SAY") end)
+				self:Schedule(4, function() SendChatMessage("6", "SAY") end)
                 self:Schedule(5, function() SendChatMessage("5", "SAY") end)
                 self:Schedule(6, function() SendChatMessage("4", "SAY") end)
                 self:Schedule(7, function() SendChatMessage("3", "SAY") end)
                 self:Schedule(8, function() SendChatMessage("2", "SAY") end)
                 self:Schedule(9, function() SendChatMessage("1", "SAY") end)
-                self:Schedule(10, function() SendChatMessage("Clear", "SAY") end)
+                
             end
         end
+    end
+end
+
+function mod:SPELL_AURA_REMOVED(args)
+    if args:IsPlayer() and args.spellId == 9250692 then
+		SendChatMessage("Clear", "SAY")
     end
 end
 
