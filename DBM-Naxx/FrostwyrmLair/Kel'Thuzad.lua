@@ -34,7 +34,7 @@ local warnMindControlSoon	= mod:NewSoonAnnounce(28410, 4)
 local warnFreezingBlast                = mod:NewSpellAnnounce(9250720, 2)
 
 local specwarnP2Soon		= mod:NewSpecialWarning("specwarnP2Soon")
---local specWarnManaBomb		= mod:NewSpecialWarningMoveAway(27819, nil, nil, nil, 1, 2)
+local specWarnManaBomb		= mod:NewSpecialWarningMoveAway(27819, nil, nil, nil, 1, 2)
 local specWarnManaBombNear	= mod:NewSpecialWarningClose(27819, nil, nil, nil, 1, 2)
 local yellManaBomb			= mod:NewShortYell(27819)
 local specWarnBlast			= mod:NewSpecialWarningTarget(27808, "Healer", nil, nil, 1, 2)
@@ -343,7 +343,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			self:SetIcon(args.destName, 8, 5.5)
 		end
 		if args:IsPlayer() then
-			--specWarnManaBomb:Show()
+			specWarnManaBomb:Show()
 			specWarnManaBomb:Play("bombrun")
 			yellManaBomb:Yell()
 		elseif self:CheckNearby(12, args.destName) then
