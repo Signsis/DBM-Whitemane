@@ -45,14 +45,14 @@ local specWarnKickGroups	= mod:NewSpecialWarningInterrupt(55802, "HasInterrupt",
 
 local blastTimer			= mod:NewBuffActiveTimer(4, 27808, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON)
 local timerManaBomb			= mod:NewCDTimer(20, 27819, "Detonate Mana", nil, nil, 3, nil, nil, true)
-local timerFrostBlast		= mod:NewCDTimer(44, 27808, "Frost Blast", nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON, true)
+local timerFrostBlast		= mod:NewCDTimer(44, 27808, "Frost Blast", nil, nil, 2, nil, DBM_COMMON_L.DEADLY_ICON, true)
 local timerFissure			= mod:NewTargetTimer(5, 27810, nil, nil, 2, 3)
 local timerFissureCD 		= mod:NewCDTimer(15, 27810, "Shadow Fissure", nil, nil, 3, nil, nil, true) -- sometimes skips one?
 local timerMC				= mod:NewBuffActiveTimer(20, 28410, nil, nil, nil, 3)
 local timerMCCD				= mod:NewCDTimer(90, 28410, "Chains of Kel'Thuzad", nil, nil, 3, nil, nil, true)
 local timerPhase2			= mod:NewTimer(228, "TimerPhase2", nil, nil, nil, 6)
 
-local timerFreezingBlast				= mod:NewCDTimer(14, 9250720, "Freezing Blast", nil, nil, 3, nil, nil, true)
+local timerFreezingBlast				= mod:NewCDTimer(14, 9250720, "Freezing Blast", nil, nil, 2, nil, nil, true)
 
 specWarnKickGroups:SetText("Group %d")
 DBM:GetModLocalization("Kel'Thuzad"):SetOptionLocalization({KickGroups="Voice announcement for $spell:55802 interrupt groups"})
