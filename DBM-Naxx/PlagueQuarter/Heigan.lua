@@ -29,7 +29,7 @@ timerTeleportTunnel.icon = "Interface\\Icons\\Spell_Arcane_TeleportUnderCity"
 local timerDecrepitFever        = mod:NewNextTimer(20, 9250592, "Decrepit Fever", nil, nil, 5, nil, nil, true)
 
 -- Opcja w³¹czenia/wy³¹czenia alertu na ekranie w menu bossa
-mod:AddBoolOption("CustomTeleportAlert", true, "general", nil, nil, nil, 46573)
+--mod:AddBoolOption("CustomTeleportAlert", true, "general", nil, nil, nil, 46573)
 
 -- Tabela pamiêci pozycji dla skanera oraz tabela bufora celów
 local lastPositions = {}
@@ -129,9 +129,9 @@ function mod:BackInRoom(time)
     timerDecrepitFever:Start(12)
 
     -- Wyœwietla odliczanie na ekranie, gdy boss wraca do sali / startuje walka
-    if self.Options.CustomTeleportAlert then
-        DBM:ShowCustomAlert("Interface\\Icons\\Spell_Arcane_Blink", "Teleport", time)
-    end
+    --if self.Options.CustomTeleportAlert then
+    --    DBM:ShowCustomAlert("Interface\\Icons\\Spell_Arcane_Blink", "Teleport", time)
+    --end
 end
 
 function mod:OnCombatStart(delay)
