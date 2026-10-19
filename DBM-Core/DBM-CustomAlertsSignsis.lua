@@ -39,10 +39,10 @@ DBM.DefaultOptions.CustomAlertOverrides = {
         textColor   = { r = 0.2, g = 0.6, b = 1 },
         timerColor  = { r = 1, g = 1, b = 1 },
     },
-    ["Teleport"] = {
-        textColor   = { r = 1, g = 0.8, b = 0 },
-        timerColor  = { r = 1, g = 1, b = 1 },
-    },
+    --["Teleport"] = {
+    --    textColor   = { r = 1, g = 0.8, b = 0 },
+    --    timerColor  = { r = 1, g = 1, b = 1 },
+    --},
     ["Frenzy"] = {
         textColor   = { r = 1, g = 0.88, b = 0 },
         timerColor  = { r = 1, g = 1, b = 1 },
@@ -503,7 +503,7 @@ local function InitCustomAlertGUI()
         { key = "Locust Swarm", label = "Anub'Rekhan - Locust Swarm", icon = "Interface\\Icons\\Spell_Nature_InsectSwarm" },
         { key = "Web Spray",    label = "Maexxna - Web Spray",    icon = "Interface\\Icons\\Spell_Nature_Web" },
         { key = "Spiderlings",  label = "Maexxna - Spiderlings",  icon = "Interface\\Icons\\INV_Misc_MonsterSpiderCarapace_01" },
-        { key = "Teleport",     label = "Heigan - Teleport",      icon = "Interface\\Icons\\Spell_Arcane_Blink" },
+        --{ key = "Teleport",     label = "Heigan - Teleport",      icon = "Interface\\Icons\\Spell_Arcane_Blink" },
         { key = "Frenzy",       label = "Faerlina - Frenzy",      icon = "Interface\\Icons\\Spell_Shadow_UnholyFrenzy" },
 		{ key = "Static Field", label = "Malygos - Static Field", icon = "Interface\\Icons\\Spell_Arcane_MassDispel" },
     }
