@@ -7,7 +7,7 @@ mod:SetCreatureID(15956)
 mod:RegisterCombat("combat_yell", L.Pull1, L.Pull2)
 
 mod:RegisterEventsInCombat(
-    "SPELL_CAST_START 28785 54021 9250582 9250583",
+    "SPELL_CAST_START 28785 54021 9250582 9250583 9250578 28783",
 	"SPELL_CAST_SUCCESS 28783 56090 9250578 9250579",
     "SPELL_AURA_REMOVED 28785 54021 9250582 9250583",
     "SPELL_AURA_APPLIED 9250685 9250684",
@@ -79,6 +79,9 @@ function mod:SPELL_CAST_START(args)
                 bar:SetColor({r = 0, g = 1, b = 0})
             end
         end
+	elseif args:IsSpellID(9250578, 28783) then
+		timerImpale:Start()
+		warnImpale:Show()
 	end
 end
 
