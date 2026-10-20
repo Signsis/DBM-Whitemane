@@ -158,8 +158,7 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnSoulConvergence:Show()
             specWarnSoulConvergence:Play("targetyou")
 			if self.Options.YellSoulConvergenceCountdown then
-                --SendChatMessage("Volatile Spores on me", "SAY")
-				SendChatMessage("Soul onvergence on " .. args.destName, "SAY")
+				SendChatMessage("Soul Convergence on " .. args.destName, "SAY")
 
             end
 		end
