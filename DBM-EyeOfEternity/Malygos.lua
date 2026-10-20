@@ -38,7 +38,7 @@ local timerVortex				= mod:NewCastTimer(13.5, 56105, nil, nil, nil, 5, nil, DBM_
 local timerVortexCD				= mod:NewNextTimer(78, 56105, "Vortex", nil, nil, 2, nil, nil, true)
 local timerChilledtotheBone		= mod:NewBuffFadesTimer(8, 70106, nil, nil, nil, 5)
 
-local timerArcaneFeedbackCD		= mod:NewNextTimer(60, 9250865, "Arcane Feedback", nil, nil, 2, nil, nil, true)
+local timerArcaneFeedbackCD		= mod:NewNextTimer(60, 9250865, "Arcane Feedback", nil, nil, 3, nil, nil, true)
 local warnArcaneFeedback		= mod:NewTargetAnnounce(9250865, 3)
 local yellArcaneFeedback		= mod:NewYellMe(9250865, "Arcane Feedback on me")
 local specWarnArcaneFeedback	= mod:NewSpecialWarningYou(9250865, nil, nil, nil, 1, 2)
@@ -51,7 +51,7 @@ local warnBreathInc				= mod:NewSoonAnnounce(56505, 3)
 local specWarnBreath			= mod:NewSpecialWarningSpell(56505, nil, nil, nil, 2, 2)
 
 local timerBreath				= mod:NewBuffActiveTimer(8, 56505, nil, nil, nil, 5) --lasts 5 seconds plus 3 sec cast.
-local timerBreathCD				= mod:NewCDTimer(70, 56505, nil, nil, nil, 2)
+local timerBreathCD				= mod:NewCDTimer(70, 56505, nil, nil, nil, 2, nil, nil ,true)
 local timerIntermission			= mod:NewPhaseTimer(22)
 
 -- Stage Three
@@ -253,7 +253,7 @@ function mod:OnSync(event, arg)
 		timerArcaneFeedbackCD:Cancel()
 		warnPhase2:Show()
 		timerIntermission:Start()
-		timerBreathCD:Start(78)
+		timerBreathCD:Start(85)   -- by³o 78
 	elseif event == "BreathSoon" then
 		warnBreathInc:Show()
 	elseif event == "Phase3" then
