@@ -7,6 +7,8 @@ mod:SetCreatureID(16060)
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
+	"SPELL_AURA_APPLIED 9250699 9250700",
+	"SPELL_AURA_REMOVED 9250699 9250700",
 	"UNIT_DIED"
 )
 
@@ -17,11 +19,16 @@ local warnWaveSoon		= mod:NewAnnounce("WarningWaveSoon", 2)
 local warnRiderDown		= mod:NewAnnounce("WarningRiderDown", 4)
 local warnKnightDown	= mod:NewAnnounce("WarningKnightDown", 2)
 local warnPhase2		= mod:NewPhaseAnnounce(2, 3)
+local warnSoulConvergence       = mod:NewTargetNoFilterAnnounce(9250699, 2)
 
 local timerPhase2		= mod:NewTimer(270, "TimerPhase2", 27082, nil, nil, 6)
 local timerWave			= mod:NewTimer(20, "TimerWave", 5502, nil, nil, 1)
 local timerGate			= mod:NewTimer(150, "Gate Opens", 9484)
 local timerTeleport		= mod:NewTimer(25, "TimerTeleport", 31569)
+local SoulConvergencetimer            = mod:NewNextTimer(30, 9250699, "Soul Convergence", nil, nil, 3, nil, nil, true)
+
+local specWarnSoulConvergence = mod:NewSpecialWarningYou(9250699, nil, nil, nil, 1, 2)
+mod:AddBoolOption("YellSoulConvergenceCountdown", true, "announce", nil, nil, nil, 9250692)
 
 mod.vb.wave = 0
 local wavesNormal = {
@@ -119,6 +126,9 @@ function mod:OnCombatStart()
 	warnWaveSoon:Schedule(22, self.vb.wave + 1, getWaveString(self.vb.wave + 1))
 	self:Schedule(25, NextWave, self)
 	self:Schedule(270, StartPhase2, self)
+	if self:IsDifficulty("heroic10") or self:IsDifficulty("heroic25") then
+		SoulConvergencetimer:Start()
+	end
 end
 
 function mod:OnTimerRecovery()
@@ -140,3 +150,24 @@ function mod:UNIT_DIED(args)
 	end
 end
 
+function mod:SPELL_AURA_APPLIED(args)
+    if args:IsSpellID(9250699, 9250700) then
+        SoulConvergencetimer:Start()
+		warnSoulConvergence:CombinedShow(0.3, args.destName)
+		if args:IsPlayer() then
+			specWarnSoulConvergence:Show()
+            specWarnSoulConvergence:Play("targetyou")
+			if self.Options.YellSoulConvergenceCountdown then
+                --SendChatMessage("Volatile Spores on me", "SAY")
+				SendChatMessage("Soul onvergence on " .. args.destName, "SAY")
+
+            end
+		end
+	end
+end
+
+function mod:SPELL_AURA_REMOVED(args)
+    if args:IsPlayer() and args:IsSpellID(9250699, 9250700) then
+		SendChatMessage("Clear", "SAY")
+    end
+end
