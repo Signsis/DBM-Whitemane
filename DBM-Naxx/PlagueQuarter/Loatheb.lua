@@ -25,7 +25,7 @@ local warnHealNow     = mod:NewAnnounce("WarningHealNow", 1, 48071, false, nil, 
 local timerSpore    = mod:NewNextTimer(15, 32329, "Itchy Spores", nil, nil, 5, "Interface\\AddOns\\DBM-VPVEM\\Icons\\LoathebSporeSignsis", DBM_COMMON_L.DAMAGE_ICON)
 local timerDoom     = mod:NewNextTimer(20, 29204, nil, nil, nil, 2)
 local timerAura     = mod:NewBuffActiveTimer(17, 55593, nil, nil, nil, 5, nil, DBM_COMMON_L.HEALER_ICON)
-local timerwVolatileSpores     = mod:NewNextTimer(15, 9250692, "Volatile Spores", nil, nil, 2, nil ,nil, true)
+local timerwVolatileSpores     = mod:NewNextTimer(15, 9250692, "Volatile Spores", nil, nil, 3, nil ,nil, true)
 
 -- Tworzymy powiadomienie dla celu
 local warnVolatileSpores       = mod:NewTargetNoFilterAnnounce(9250692, 2)
