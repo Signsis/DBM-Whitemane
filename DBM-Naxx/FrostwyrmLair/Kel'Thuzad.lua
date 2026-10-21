@@ -270,8 +270,8 @@ function mod:OnCombatStart(delay)
 		self.vb.nextWarnAdds = 0.75
 		self.vb.addPeriod = 0.25
 	else
-		self.vb.nextWarnAdds = 0.4
-		self.vb.addPeriod = 0.4
+		self.vb.nextWarnAdds = 0.52
+		self.vb.addPeriod = 0.52
 	end
 	self.vb.MCIcon = 1
 	--specwarnP2Soon:Schedule(218-delay)
