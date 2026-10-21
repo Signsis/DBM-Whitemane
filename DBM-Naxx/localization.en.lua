@@ -258,7 +258,8 @@ L:SetWarningLocalization({
 })
 
 L:SetOptionLocalization({
-	WarningShieldWallSoon	= "Show pre-warning for Shield Wall ending"
+	WarningShieldWallSoon	= "Show pre-warning for Shield Wall ending",
+	YellJaggedKnifeCountdown = "Yell when affected by Jagged Knife"
 })
 
 L:SetMiscLocalization({
