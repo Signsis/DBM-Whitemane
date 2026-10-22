@@ -19,7 +19,8 @@ mod:RegisterEventsInCombat(
 	"SPELL_AURA_REMOVED 28410",
 	"SPELL_CAST_SUCCESS 27810 27819 27808 28410",
 	"SPELL_CAST_START 55802 9250720 9250719",
-	"UNIT_HEALTH_UNFILTERED"-- have to do unfiltered because Zidras doesn't feel like fixing his stuff
+	"UNIT_HEALTH_UNFILTERED",   -- have to do unfiltered because Zidras doesn't feel like fixing his stuff
+	"UNIT_DIED"
 )
 
 local warnAddsSoon			= mod:NewAnnounce("warnAddsSoon", 1, "Interface\\Icons\\INV_Misc_MonsterSpiderCarapace_01")
@@ -240,20 +241,21 @@ local function StartPhase2(self)
 		warnPhase2:Show()
 		warnPhase2:Play("ptwo")
 		self.vb.bossTransformed = false
+
+		-- Zabezpieczenie: Na start P2 upewniamy siê ¿e broñ jest ubraña
+        if (self.Options.EqUneqWeaponsKT or self.Options.EqUneqWeaponsKT2) and self:IsDps() then
+            EqWKT(self)
+        end
+
 		timerFissureCD:Start(25)
 		timerManaBomb:Start(20)
 		timerFrostBlast:Start(44)
-		if self:IsDifficulty("normal25") then
+		if self:IsDifficulty("normal25") or self:IsDifficulty("heroic25") then
 			timerMCCD:Start(50)
 			warnMindControlSoon:Schedule(45)
 			if self.Options.EqUneqWeaponsKT and self:IsDps() then
 				self:Schedule(48, UnWKT, self)
 				self:Schedule(48.5, UnWKT, self)
-			end
-		else
-			if self:IsDifficulty("heroic25") then
-				timerMCCD:Start(50)
-				warnMindControlSoon:Schedule(45)
 			end
 		end
 		if self.Options.RangeFrame then
@@ -292,6 +294,11 @@ function mod:OnCombatEnd()
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
 	end
+	-- Zabezpieczenie: Zak³adamy broñ po wipe / zabiciu bossa
+    if (self.Options.EqUneqWeaponsKT or self.Options.EqUneqWeaponsKT2) and self:IsDps() then
+        self:Schedule(0.5, EqWKT, self)
+        self:Schedule(2.0, EqWKT, self)
+    end
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
@@ -373,24 +380,8 @@ function mod:SPELL_AURA_APPLIED(args)
 			self:Schedule(88.0, UnWKT, self)
 			self:Schedule(88.5, UnWKT, self)
 		end
-	elseif spellId == 9250718 then         -- faza 3 ten debuff na bossie
-		timerFissureCD:Start(25)
-		timerManaBomb:Start(20)
-		timerFrostBlast:Start(44)
-		timerFreezingBlast:Start(18)
-		if self:IsDifficulty("normal25") then
-			timerMCCD:Start(50)
-			warnMindControlSoon:Schedule(45)
-			if self.Options.EqUneqWeaponsKT and self:IsDps() then
-				self:Schedule(48, UnWKT, self)
-				self:Schedule(48.5, UnWKT, self)
-			end
-		else
-			if self:IsDifficulty("heroic25") then
-				timerMCCD:Start(50)
-				warnMindControlSoon:Schedule(45)
-			end
-		end
+	--elseif spellId == 9250718 then         -- faza 3 ten debuff na bossie
+		
 	end
 end
 
@@ -462,3 +453,20 @@ end
 	--	warnAddsSoon:Show()
 	--end
 --end
+
+function mod:UNIT_DIED(args)
+    if self:GetCIDFromGUID(args.destGUID) == 900149 then
+        timerFissureCD:Start(25)
+		timerManaBomb:Start(20)
+		timerFrostBlast:Start(44)
+		timerFreezingBlast:Start(18)
+		if self:IsDifficulty("normal25") or self:IsDifficulty("heroic25") then
+			timerMCCD:Start(50)
+			warnMindControlSoon:Schedule(45)
+			if self.Options.EqUneqWeaponsKT and self:IsDps() then
+				self:Schedule(48, UnWKT, self)
+				self:Schedule(48.5, UnWKT, self)
+			end
+		end
+    end
+end
