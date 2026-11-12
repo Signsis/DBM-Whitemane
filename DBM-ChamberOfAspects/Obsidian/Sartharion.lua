@@ -9,7 +9,7 @@ mod:SetCreatureID(28860)
 mod:RegisterCombat("yell", L.YellSarthPull)
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 56908 58956",
+	"SPELL_CAST_START 56908 58956 9250871",
 	"SPELL_CAST_SUCCESS 57579 59127",
 	"SPELL_AURA_APPLIED 57491 9250867 9250868",
 	"SPELL_AURA_REMOVED 9250867 9250868",
@@ -154,7 +154,7 @@ function mod:OnCombatEnd()
 end
 
 function mod:SPELL_CAST_START(args)
-	if args:IsSpellID(56908, 58956) then -- Flame breath
+	if args:IsSpellID(56908, 58956, 9250871) then -- Flame breath
 		warnBreathSoon:Schedule(15)
 		timerBreath:Start()
 	end
