@@ -21,7 +21,7 @@ mod:RegisterEventsInCombat(
 )
 
 local warnFissure				= mod:NewTargetNoFilterAnnounce(59127, 4)
-local warnBreathSoon			= mod:NewSoonAnnounce(58956, 2, nil, "Tank|Healer")
+local warnBreathSoon			= mod:NewSoonAnnounce(58956, 2, nil, nil)    -- 4 parametr by³o ""Tank|Healer""
 local warnTenebron				= mod:NewAnnounce("WarningTenebron", 2, 61248)
 local warnShadron				= mod:NewAnnounce("WarningShadron", 2, 58105)
 local warnVesperon				= mod:NewAnnounce("WarningVesperon", 2, 61251)
@@ -40,7 +40,8 @@ local specWarnFissureClose		= mod:NewSpecialWarningClose(59127, nil, nil, nil, 2
 local yellFissure				= mod:NewYellMe(59127)
 
 local timerFissure				= mod:NewTargetTimer(5, 59128, nil, nil, 2, 3)--Cast timer until Void Blast. it's what happens when shadow fissure explodes.
-local timerBreath				= mod:NewCDTimer(20, 58956, nil, "Tank|Healer", nil, 5)
+--local timerBreath				= mod:NewCDTimer(20, 58956, nil, true, nil, 5)     -- 4 parametr by³o ""Tank|Healer""
+local timerBreath				= mod:NewTimer(20, "Flame Breath", 58956, true, nil, 5)
 local timerWall					= mod:NewNextTimer(25, 43113, nil, nil, nil, 2)
 local timerTenebron				= mod:NewTimer(45, "TimerTenebron", 61248, nil, nil, 1)
 local timerShadron				= mod:NewTimer(88, "TimerShadron", 58105, nil, nil, 1)
